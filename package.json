@@ -1,0 +1,69 @@
+{
+    "name": "@x-drive/logger",
+    "version": "1.0.0",
+    "description": "日志信息模块，用于替代 console",
+    "author": "digiaries <digiaries@hotmail.com>",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "keywords": [
+        "logger"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/x-dirve/logger.git"
+    },
+    "scripts": {
+        "build": "cross-env NODE_ENV=production rollup -c",
+        "dev": "rollup -c -w",
+        "changelog": "changelog"
+    },
+    "bugs": {
+        "url": "https://github.com/x-dirve/logger/issues"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+        "@x-drive/utils": "1.1.12",
+        "@x-drive/changelog": "1.1.5",
+        "@babel/cli": "7.10.5",
+        "@babel/core": "7.11.1",
+        "@babel/preset-env": "7.11.0",
+        "@babel/preset-typescript": "7.10.4",
+        "babel-core": "6.26.3",
+        "babel-eslint": "10.0.1",
+        "babel-jest": "24.9.0",
+        "@babel/plugin-proposal-object-rest-spread": "7.11.0",
+        "babel-plugin-transform-class-properties": "6.24.1",
+        "babel-preset-power-assert": "3.0.0",
+        "ts-jest": "26.4.0",
+        "typescript": "^3.8.3",
+        "@typescript-eslint/eslint-plugin": "^2.23.0",
+        "@typescript-eslint/parser": "^2.23.0",
+        "@zerollup/ts-transform-paths": "^1.7.3",
+        "@types/babel-traverse": "^6.25.5",
+        "@types/babel-types": "^7.0.7",
+        "@types/debug": "4.1.5",
+        "rollup": "^1.23.1",
+        "rollup-plugin-terser": "7.0.2",
+        "@rollup/plugin-replace": "^2.2.0",
+        "@rollup/plugin-json": "4.1.0",
+        "rollup-plugin-alias": "^2.0.1",
+        "rollup-plugin-babel": "^4.3.3",
+        "rollup-plugin-buble": "^0.19.8",
+        "rollup-plugin-commonjs": "^10.1.0",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-typescript2": "^0.24.3",
+        "cross-env": "6.0.3"
+    },
+    "peerDependencies": {
+        "@x-drive/utils": "1.1.12"
+    }
+}
