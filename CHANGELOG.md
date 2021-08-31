@@ -1,3 +1,8 @@
+## v1.1.0
+
+### Feat
+- feat: 新增 table、trace 支持，error、warn 支持显示额外信息，调整 group 显示细节 [b2516d4](https://github.com/x-dirve/logger/commit/b2516d460c3455870386edd90fee83af4021e8b1)
+
 ## v1.0.0
 
 ### Feat
