@@ -199,8 +199,12 @@ class Logger {
     }
     /**输出一个表格 */
     table(...args) {
-        console.group.apply(console, this.build([""]));
-        console.table.apply(console, args);
+        if (!isArray(args) || !args.length) {
+            return;
+        }
+        const title = args.length > 1 && isString(args[0]) && args[0] || "";
+        console.group.apply(console, this.build([title]));
+        console.table.apply(console, title ? args.slice(1) : args);
         console.groupEnd();
     }
 }

@@ -1,3 +1,8 @@
+## v1.1.1
+
+### Feat
+- feat: table 支持带标题显示 [babf9f2](https://github.com/x-dirve/logger/commit/babf9f2b6ee05435503b24db11b9e479f3cca1c5)
+
 ## v1.1.0
 
 ### Feat

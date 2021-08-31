@@ -94,3 +94,11 @@
     ```ts
     table(...val: any[]): void;
     ```
+    不带标题的 table
+    ```ts
+    Logger.table([{"a":1, "b":2}]);
+    ```
+    当传入的参数大于 1 个且第一个参数是字符串时，table 会把第一个参数当作标题
+    ```ts
+    Logger.table("Table", [{"a":1, "b":2}]);
+    ```

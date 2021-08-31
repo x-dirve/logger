@@ -1,6 +1,6 @@
 {
     "name": "@x-drive/logger",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "日志信息模块，用于替代 console",
     "author": "digiaries <digiaries@hotmail.com>",
     "license": "MIT",

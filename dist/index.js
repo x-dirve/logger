@@ -227,8 +227,12 @@ Logger.prototype.table = function table () {
         var args = [], len = arguments.length;
         while ( len-- ) args[ len ] = arguments[ len ];
 
-    console.group.apply(console, this.build([""]));
-    console.table.apply(console, args);
+    if (!utils.isArray(args) || !args.length) {
+        return;
+    }
+    var title = args.length > 1 && utils.isString(args[0]) && args[0] || "";
+    console.group.apply(console, this.build([title]));
+    console.table.apply(console, title ? args.slice(1) : args);
     console.groupEnd();
 };
 function getLogger(type, config) {
