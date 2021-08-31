@@ -1,4 +1,4 @@
-import { copy, isString, extend, isUndefined, date, isArray, labelReplace } from '@x-drive/utils';
+import { copy, isString, extend, isUndefined, date, isArray, labelReplace, isObject } from '@x-drive/utils';
 
 /**已存在的 Logger 实例 */
 const LoggerSubjects = new Map();
@@ -8,7 +8,8 @@ const DEF_LOGGER_STYLES = {
     "bold": "font-weight: bold;",
     "lighter": "font-weight: lighter;",
     "orange": "color: #ff5722",
-    "green": "color: #8bc34a"
+    "green": "color: #8bc34a",
+    "violet": "color: #ff22ff"
 };
 /**默认头部信息样式 */
 const DEF_LOGGER_HEAD_INFO_STYLE = {
@@ -80,7 +81,7 @@ class Logger {
     }
     /**获取时间 */
     getTime() {
-        return date(new Date, "H:i:s.M");
+        return date(new Date, "i:s");
     }
     /**构建显示样式 */
     buildStyle(styles) {
@@ -99,7 +100,7 @@ class Logger {
         });
     }
     /**构建显示内容 */
-    build(contents) {
+    build(contents, withStyle = true) {
         var tpl = this.headTpl;
         const headData = {
             "date": this.getTime(),
@@ -114,11 +115,14 @@ class Logger {
             tpl = `${tpl} ${this.headTypeTpls.action}`;
             headStyle.push("action");
         }
-        return [
-            `${labelReplace(tpl, headData)}`,
-            ...this.buildStyle(headStyle),
-            ...contents
+        var result = [
+            labelReplace(tpl, headData)
         ];
+        if (withStyle) {
+            result = result.concat(this.buildStyle(headStyle));
+        }
+        result = result.concat(contents);
+        return result;
     }
     /**
      * 获取当前 Logger 的子 Logger
@@ -164,11 +168,15 @@ class Logger {
     }
     /**警告日志 */
     warn(...val) {
-        console.warn.apply(console, val);
+        console.warn.apply(console, this.build(val, false));
     }
     /**错误日志 */
     error(...val) {
-        console.error.apply(console, val);
+        console.error.apply(console, this.build(val, false));
+    }
+    /**显示当前执行的代码在堆栈中的调用路径 */
+    trace(...val) {
+        console.trace.apply(console, this.build(val));
     }
     group(title, ...args) {
         if (isString(title)) {
@@ -180,13 +188,19 @@ class Logger {
         const { collapsed = true, text } = title;
         console[collapsed ? "groupCollapsed" : "group"].apply(console, this.build([text]));
         args.forEach(arg => {
-            if (isString(arg)) {
-                console.log(arg);
-            }
-            else {
+            if (isArray(arg) || isObject(arg)) {
                 console.dir(arg);
             }
+            else {
+                console.log(arg);
+            }
         });
+        console.groupEnd();
+    }
+    /**输出一个表格 */
+    table(...args) {
+        console.group.apply(console, this.build([""]));
+        console.table.apply(console, args);
         console.groupEnd();
     }
 }

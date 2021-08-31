@@ -84,8 +84,10 @@ declare class Logger {
     warn(...val: any[]): void;
     /**错误日志 */
     error(...val: any[]): void;
+    /**显示当前执行的代码在堆栈中的调用路径 */
+    trace(...val: any[]): void;
     /**
-     * 群组日志
+     * 信息分组日志
      * @param title 群组标题
      * @param args  打印的内容
      * @example
@@ -103,8 +105,10 @@ declare class Logger {
     );
     ```
      */
-    group(title: IGroupTitleConfig, ...args: Array<any>): void;
-    group(title: string, ...args: Array<any>): void;
+    group(title: IGroupTitleConfig, ...args: any[]): void;
+    group(title: string, ...args: any[]): void;
+    /**输出一个表格 */
+    table(...args: any[]): void;
 }
 export { Logger };
 declare function getLogger(type: string, config?: Partial<ILoggerConfig>): Logger;

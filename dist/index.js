@@ -12,7 +12,8 @@ var DEF_LOGGER_STYLES = {
     "bold": "font-weight: bold;",
     "lighter": "font-weight: lighter;",
     "orange": "color: #ff5722",
-    "green": "color: #8bc34a"
+    "green": "color: #8bc34a",
+    "violet": "color: #ff22ff"
 };
 /**默认头部信息样式 */
 var DEF_LOGGER_HEAD_INFO_STYLE = {
@@ -83,7 +84,7 @@ var Logger = function Logger(type, config) {
 };
 /**获取时间 */
 Logger.prototype.getTime = function getTime () {
-    return utils.date(new Date, "H:i:s.M");
+    return utils.date(new Date, "i:s");
 };
 /**构建显示样式 */
 Logger.prototype.buildStyle = function buildStyle (styles) {
@@ -104,7 +105,9 @@ Logger.prototype.buildStyle = function buildStyle (styles) {
     });
 };
 /**构建显示内容 */
-Logger.prototype.build = function build (contents) {
+Logger.prototype.build = function build (contents, withStyle) {
+        if ( withStyle === void 0 ) withStyle = true;
+
     var tpl = this.headTpl;
     var headData = {
         "date": this.getTime(),
@@ -119,10 +122,14 @@ Logger.prototype.build = function build (contents) {
         tpl = tpl + " " + (this.headTypeTpls.action);
         headStyle.push("action");
     }
-    return [
-        ("" + (utils.labelReplace(tpl, headData))) ].concat( this.buildStyle(headStyle),
-        contents
-    );
+    var result = [
+        utils.labelReplace(tpl, headData)
+    ];
+    if (withStyle) {
+        result = result.concat(this.buildStyle(headStyle));
+    }
+    result = result.concat(contents);
+    return result;
 };
 /**
  * 获取当前 Logger 的子 Logger
@@ -176,14 +183,21 @@ Logger.prototype.warn = function warn () {
         var val = [], len = arguments.length;
         while ( len-- ) val[ len ] = arguments[ len ];
 
-    console.warn.apply(console, val);
+    console.warn.apply(console, this.build(val, false));
 };
 /**错误日志 */
 Logger.prototype.error = function error () {
         var val = [], len = arguments.length;
         while ( len-- ) val[ len ] = arguments[ len ];
 
-    console.error.apply(console, val);
+    console.error.apply(console, this.build(val, false));
+};
+/**显示当前执行的代码在堆栈中的调用路径 */
+Logger.prototype.trace = function trace () {
+        var val = [], len = arguments.length;
+        while ( len-- ) val[ len ] = arguments[ len ];
+
+    console.trace.apply(console, this.build(val));
 };
 Logger.prototype.group = function group (title) {
         var args = [], len = arguments.length - 1;
@@ -199,13 +213,22 @@ Logger.prototype.group = function group (title) {
         var text = title.text;
     console[collapsed ? "groupCollapsed" : "group"].apply(console, this.build([text]));
     args.forEach(function (arg) {
-        if (utils.isString(arg)) {
-            console.log(arg);
-        }
-        else {
+        if (utils.isArray(arg) || utils.isObject(arg)) {
             console.dir(arg);
         }
+        else {
+            console.log(arg);
+        }
     });
+    console.groupEnd();
+};
+/**输出一个表格 */
+Logger.prototype.table = function table () {
+        var args = [], len = arguments.length;
+        while ( len-- ) args[ len ] = arguments[ len ];
+
+    console.group.apply(console, this.build([""]));
+    console.table.apply(console, args);
     console.groupEnd();
 };
 function getLogger(type, config) {

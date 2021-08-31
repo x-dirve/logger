@@ -8,17 +8,19 @@
     - 命令行方式
         ```shell
         #使用 npm
-        npm install --save-dev@x-drive/logger
+        npm install --save-dev @x-drive/logger @x-drive/utils
 
         #使用 yarn
-        yarn add --dev @x-drive/logger
+        yarn add --dev @x-drive/logger @x-drive/utils
         ```
     - 直接修改 `package.json`
         ```json
         "devDependencies": {
-            "@x-drive/logger": "1.0.0"
+            "@x-drive/logger": "1.1.0",
+            "@x-drive/utils": "^1.1.12"
         }
         ```
+1. 本包依赖 `@x-drive/utils`
 1. 在项目中使用
     ```typescript
     import getLogger from "@x-drive/logger";
@@ -83,4 +85,12 @@
 - `error` 错误日志
     ```ts
     error(...val: any[]): void;
+    ```
+- `trace` 显示当前执行的代码在堆栈中的调用路径
+    ```ts
+    trace(...val: any[]): void;
+    ```
+- `table` 输出一个表格
+    ```ts
+    table(...val: any[]): void;
     ```

@@ -1,4 +1,4 @@
-import { copy, extend, isString, date, isArray, labelReplace, isUndefined } from "@x-drive/utils";
+import { copy, extend, isString, date, isArray, labelReplace, isUndefined, isObject } from "@x-drive/utils";
 
 /**已存在的 Logger 实例 */
 const LoggerSubjects = new Map<string, Logger>();
@@ -72,6 +72,7 @@ const DEF_LOGGER_STYLES: ILoggerStyles = {
     , "lighter": "font-weight: lighter;"
     , "orange": "color: #ff5722"
     , "green": "color: #8bc34a"
+    , "violet": "color: #ff22ff"
 };
 
 /**默认头部信息样式 */
@@ -173,7 +174,7 @@ class Logger {
 
     /**获取时间 */
     private getTime() {
-        return date(new Date, "H:i:s.M");
+        return date(new Date, "i:s");
     }
 
     /**构建显示样式 */
@@ -194,7 +195,7 @@ class Logger {
     }
 
     /**构建显示内容 */
-    private build(contents:any[]) {
+    private build(contents:any[], withStyle:boolean = true) {
         var tpl = this.headTpl;
         const headData = {
             "date": this.getTime()
@@ -211,11 +212,15 @@ class Logger {
             headStyle.push("action");
         }
 
-        return [
-            `${labelReplace(tpl, headData)}`
-            , ...this.buildStyle(headStyle)
-            , ...contents
+        var result = [
+            labelReplace(tpl, headData)
         ];
+        if (withStyle) {
+            result = result.concat(this.buildStyle(headStyle))
+        }
+        result = result.concat(contents);
+
+        return result;
     }
 
     /**
@@ -270,7 +275,7 @@ class Logger {
     warn(...val: any[]) {
         console.warn.apply(
             console
-            , val
+            , this.build(val, false)
         );
     }
 
@@ -278,12 +283,20 @@ class Logger {
     error(...val: any[]) {
         console.error.apply(
             console
-            , val
+            , this.build(val, false)
+        );
+    }
+
+    /**显示当前执行的代码在堆栈中的调用路径 */
+    trace(...val: any[]) {
+        console.trace.apply(
+            console
+            , this.build(val)
         );
     }
 
     /**
-     * 群组日志
+     * 信息分组日志
      * @param title 群组标题
      * @param args  打印的内容
      * @example
@@ -301,8 +314,8 @@ class Logger {
     );
     ```
      */
-    group(title: IGroupTitleConfig, ...args:Array<any>):void
-    group(title: string, ...args: Array<any>):void
+    group(title: IGroupTitleConfig, ...args: any[]):void
+    group(title: string, ...args: any[]):void
     group(title, ...args) {
         if (isString(title)) {
             (title as IGroupTitleConfig) = {
@@ -321,13 +334,23 @@ class Logger {
         );
 
         args.forEach(arg => {
-            if (isString(arg)) {
-                console.log(arg)
+            if (isArray(arg) || isObject(arg)) {
+                console.dir(arg);
             } else {
-                console.dir(arg)
+                console.log(arg);
             }
         });
 
+        console.groupEnd();
+    }
+
+    /**输出一个表格 */
+    table(...args: any[]) {
+        console.group.apply(
+            console
+            , this.build([""])
+        );
+        console.table.apply(console, args);
         console.groupEnd();
     }
 }
