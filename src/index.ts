@@ -1,6 +1,6 @@
 import { copy, extend, isString, date, isArray, labelReplace, isUndefined, isObject } from "@x-drive/utils";
 
-/**已存在的 Logger 实例 */
+/**已存在的全局 Logger 实例 */
 const LoggerSubjects = new Map<string, Logger>();
 
 interface ILoggerStyles {
@@ -14,17 +14,23 @@ interface ILoggerStyles {
 }
 
 interface ILoggerConfig {
-    /**信息样式 */
+    /**显示样式 */
     style: ILoggerStyles;
 
     /**业务类型 */
     app:string;
 
     /**头信息排列顺序 */
-    headSequence:string[];
+    headSequence: Array<keyof ILoggerHeadInfoTypes>;
 
     /**是否显示时间 */
     showDate:boolean;
+
+    /**显示模版 */
+    tpls: Partial<ILoggerHeadInfoTpls>;
+
+    /**时间显示格式 */
+    dateFormat: string;
 }
 
 /**Group 标题设置 */
@@ -124,6 +130,9 @@ class Logger {
     /**子模块 */
     private subLogger = new Map<string, Logger>();
 
+    /**时间显示格式 */
+    private dateFormat: string = "i:s.M";
+
     /**
      * 日志
      * @param type   日志归属模块
@@ -131,22 +140,35 @@ class Logger {
      */
     constructor(type?: string, config: Partial<ILoggerConfig> = {}) {
         type = isString(type) ? type : "";
+        this.processConfig(type, config);
+    }
+
+    private processConfig(type:string, config: Partial<ILoggerConfig>) {
         this.module = type;
 
-        if (config.style) {
-            this.style = extend(this.style, config.style)
-        }
-
         const {
-            headSequence = copy(DEF_HEAD_SEQUENCE)
+            style
             , app
+            , headSequence = copy(DEF_HEAD_SEQUENCE)
             , showDate = true
+            , dateFormat
         } = config;
+
+        if (style) {
+            this.style = extend(this.style, style);
+        }
 
         if (isString(app)) {
             this.app = app;
         } else if (isUndefined(app)) {
             this.app = type;
+        }
+
+        if (isObject(config.tpls)) {
+            this.headTypeTpls = extend(
+                this.headTypeTpls
+                , config.tpls
+            );
         }
 
         const showHeadTypes = [];
@@ -160,21 +182,25 @@ class Logger {
             showHeadTypes.push("module");
         }
 
+        if (isString(dateFormat)) {
+            this.dateFormat = dateFormat;
+        }
+
         // "%c{date} %c{app} %c{module} %c@{action}"
         this.headTpl = showHeadTypes
-                        .sort((now, next) => headSequence.indexOf(now) - headSequence.indexOf(next))
-                        .reduce(
-                            (tpl, type) => {
-                                this.headTplTypes.push(type);
-                                return `${tpl} ${this.headTypeTpls[type] || ""}`;
-                            }
-                            , ""
-                        );
+            .sort((now, next) => headSequence.indexOf(now) - headSequence.indexOf(next))
+            .reduce(
+                (tpl, type) => {
+                    this.headTplTypes.push(type);
+                    return `${tpl} ${this.headTypeTpls[type] || ""}`;
+                }
+                , ""
+            );
     }
 
     /**获取时间 */
     private getTime() {
-        return date(new Date, "i:s");
+        return date(new Date, this.dateFormat);
     }
 
     /**构建显示样式 */
@@ -361,6 +387,11 @@ class Logger {
 
 export { Logger };
 
+/**
+ * 获取一个全局性质的 Logger
+ * @param type Logger 名称
+ * @param config Logger 配置
+ */
 function getLogger(type:string, config?:Partial<ILoggerConfig>) {
     if (!isString(type)) {
         throw(

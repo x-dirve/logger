@@ -1,6 +1,6 @@
-import { copy, isString, extend, isUndefined, date, isArray, labelReplace, isObject } from '@x-drive/utils';
+import { copy, isString, extend, isUndefined, isObject, date, isArray, labelReplace } from '@x-drive/utils';
 
-/**已存在的 Logger 实例 */
+/**已存在的全局 Logger 实例 */
 const LoggerSubjects = new Map();
 const DEF_LOGGER_STYLES = {
     "gray": "color: gray;",
@@ -49,17 +49,25 @@ class Logger {
         this.action = [];
         /**子模块 */
         this.subLogger = new Map();
+        /**时间显示格式 */
+        this.dateFormat = "i:s.M";
         type = isString(type) ? type : "";
+        this.processConfig(type, config);
+    }
+    processConfig(type, config) {
         this.module = type;
-        if (config.style) {
-            this.style = extend(this.style, config.style);
+        const { style, app, headSequence = copy(DEF_HEAD_SEQUENCE), showDate = true, dateFormat } = config;
+        if (style) {
+            this.style = extend(this.style, style);
         }
-        const { headSequence = copy(DEF_HEAD_SEQUENCE), app, showDate = true } = config;
         if (isString(app)) {
             this.app = app;
         }
         else if (isUndefined(app)) {
             this.app = type;
+        }
+        if (isObject(config.tpls)) {
+            this.headTypeTpls = extend(this.headTypeTpls, config.tpls);
         }
         const showHeadTypes = [];
         if (this.app) {
@@ -71,6 +79,9 @@ class Logger {
         if (this.module !== this.app) {
             showHeadTypes.push("module");
         }
+        if (isString(dateFormat)) {
+            this.dateFormat = dateFormat;
+        }
         // "%c{date} %c{app} %c{module} %c@{action}"
         this.headTpl = showHeadTypes
             .sort((now, next) => headSequence.indexOf(now) - headSequence.indexOf(next))
@@ -81,7 +92,7 @@ class Logger {
     }
     /**获取时间 */
     getTime() {
-        return date(new Date, "i:s");
+        return date(new Date, this.dateFormat);
     }
     /**构建显示样式 */
     buildStyle(styles) {
@@ -208,6 +219,11 @@ class Logger {
         console.groupEnd();
     }
 }
+/**
+ * 获取一个全局性质的 Logger
+ * @param type Logger 名称
+ * @param config Logger 配置
+ */
 function getLogger(type, config) {
     if (!isString(type)) {
         throw (new Error("需要指定 Logger 的类型"));

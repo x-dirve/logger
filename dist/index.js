@@ -4,7 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var utils = require('@x-drive/utils');
 
-/**已存在的 Logger 实例 */
+/**已存在的全局 Logger 实例 */
 var LoggerSubjects = new Map();
 var DEF_LOGGER_STYLES = {
     "gray": "color: gray;",
@@ -33,7 +33,6 @@ var DEF_HEAD_TYPE_TPLS = {
 };
 /**日志 */
 var Logger = function Logger(type, config) {
-    var this$1 = this;
     if ( config === void 0 ) config = {};
 
     /**显示样式设置 */
@@ -50,19 +49,31 @@ var Logger = function Logger(type, config) {
     this.action = [];
     /**子模块 */
     this.subLogger = new Map();
+    /**时间显示格式 */
+    this.dateFormat = "i:s.M";
     type = utils.isString(type) ? type : "";
+    this.processConfig(type, config);
+};
+Logger.prototype.processConfig = function processConfig (type, config) {
+        var this$1 = this;
+
     this.module = type;
-    if (config.style) {
-        this.style = utils.extend(this.style, config.style);
+    var style = config.style;
+        var app = config.app;
+        var headSequence = config.headSequence; if ( headSequence === void 0 ) headSequence = utils.copy(DEF_HEAD_SEQUENCE);
+        var showDate = config.showDate; if ( showDate === void 0 ) showDate = true;
+        var dateFormat = config.dateFormat;
+    if (style) {
+        this.style = utils.extend(this.style, style);
     }
-    var headSequence = config.headSequence; if ( headSequence === void 0 ) headSequence = utils.copy(DEF_HEAD_SEQUENCE);
-    var app = config.app;
-    var showDate = config.showDate; if ( showDate === void 0 ) showDate = true;
     if (utils.isString(app)) {
         this.app = app;
     }
     else if (utils.isUndefined(app)) {
         this.app = type;
+    }
+    if (utils.isObject(config.tpls)) {
+        this.headTypeTpls = utils.extend(this.headTypeTpls, config.tpls);
     }
     var showHeadTypes = [];
     if (this.app) {
@@ -74,6 +85,9 @@ var Logger = function Logger(type, config) {
     if (this.module !== this.app) {
         showHeadTypes.push("module");
     }
+    if (utils.isString(dateFormat)) {
+        this.dateFormat = dateFormat;
+    }
     // "%c{date} %c{app} %c{module} %c@{action}"
     this.headTpl = showHeadTypes
         .sort(function (now, next) { return headSequence.indexOf(now) - headSequence.indexOf(next); })
@@ -84,7 +98,7 @@ var Logger = function Logger(type, config) {
 };
 /**获取时间 */
 Logger.prototype.getTime = function getTime () {
-    return utils.date(new Date, "i:s");
+    return utils.date(new Date, this.dateFormat);
 };
 /**构建显示样式 */
 Logger.prototype.buildStyle = function buildStyle (styles) {
@@ -235,6 +249,11 @@ Logger.prototype.table = function table () {
     console.table.apply(console, title ? args.slice(1) : args);
     console.groupEnd();
 };
+/**
+ * 获取一个全局性质的 Logger
+ * @param type Logger 名称
+ * @param config Logger 配置
+ */
 function getLogger(type, config) {
     if (!utils.isString(type)) {
         throw (new Error("需要指定 Logger 的类型"));

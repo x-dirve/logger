@@ -8,14 +8,18 @@ interface ILoggerStyles {
     [name: string]: string;
 }
 interface ILoggerConfig {
-    /**信息样式 */
+    /**显示样式 */
     style: ILoggerStyles;
     /**业务类型 */
     app: string;
     /**头信息排列顺序 */
-    headSequence: string[];
+    headSequence: Array<keyof ILoggerHeadInfoTypes>;
     /**是否显示时间 */
     showDate: boolean;
+    /**显示模版 */
+    tpls: Partial<ILoggerHeadInfoTpls>;
+    /**时间显示格式 */
+    dateFormat: string;
 }
 /**Group 标题设置 */
 interface IGroupTitleConfig {
@@ -24,6 +28,27 @@ interface IGroupTitleConfig {
     /**是否折叠 */
     collapsed: true | false;
 }
+/**日志基础头信息样式 */
+declare type ILoggerHeadInfoTypes = {
+    /**日志业务样式 */
+    app: string | string[];
+    /**日志模块样式 */
+    module: string | string[];
+    /**日志操作样式 */
+    action: string | string[];
+    /**日志日期样式 */
+    date: string | string[];
+};
+declare type ILoggerHeadInfoTpls = {
+    /**日志业务模版 */
+    app: string;
+    /**日志模块模版 */
+    module: string;
+    /**日志操作模版 */
+    action: string;
+    /**日志日期模版 */
+    date: string;
+};
 /**日志 */
 declare class Logger {
     /**显示样式设置 */
@@ -44,12 +69,15 @@ declare class Logger {
     private action;
     /**子模块 */
     private subLogger;
+    /**时间显示格式 */
+    private dateFormat;
     /**
      * 日志
      * @param type   日志归属模块
      * @param config 日志模块配置
      */
     constructor(type?: string, config?: Partial<ILoggerConfig>);
+    private processConfig;
     /**获取时间 */
     private getTime;
     /**构建显示样式 */
@@ -111,5 +139,10 @@ declare class Logger {
     table(...args: any[]): void;
 }
 export { Logger };
+/**
+ * 获取一个全局性质的 Logger
+ * @param type Logger 名称
+ * @param config Logger 配置
+ */
 declare function getLogger(type: string, config?: Partial<ILoggerConfig>): Logger;
 export default getLogger;
