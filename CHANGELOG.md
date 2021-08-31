@@ -1,3 +1,9 @@
+## v1.2.0
+
+### Feat
+- feat: 增加显示模版、时间显示格式 配置支持 [868d79e](https://github.com/x-dirve/logger/commit/868d79e80e75138be127a4b0d4e6cccd197fedf0)
+- feat: table 支持带标题显示 [e9cccfa](https://github.com/x-dirve/logger/commit/e9cccfa4c0f290a1fa0efdc3f076dd172da4ccc9)
+
 ## v1.1.1
 
 ### Feat
