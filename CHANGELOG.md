@@ -1,3 +1,8 @@
+## v1.2.1
+
+### Feat
+- feat: 新增 info 的别名方法 log [3dbcb50](https://github.com/x-dirve/logger/commit/3dbcb50851a1854d7cdc525d2fbeea2deaa51fd0)
+
 ## v1.2.0
 
 ### Feat
