@@ -297,6 +297,11 @@ class Logger {
         }
     }
 
+    /**info 的别名 */
+    log(...val: any[]) {
+        this.info.apply(this, val);
+    }
+
     /**警告日志 */
     warn(...val: any[]) {
         console.warn.apply(

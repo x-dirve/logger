@@ -108,6 +108,8 @@ declare class Logger {
         ```
      */
     info(...val: any[]): void;
+    /**info 的别名 */
+    log(...val: any[]): void;
     /**警告日志 */
     warn(...val: any[]): void;
     /**错误日志 */

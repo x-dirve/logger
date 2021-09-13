@@ -177,6 +177,10 @@ class Logger {
             console.log.apply(console, this.build(val));
         }
     }
+    /**info 的别名 */
+    log(...val) {
+        this.info.apply(this, val);
+    }
     /**警告日志 */
     warn(...val) {
         console.warn.apply(console, this.build(val, false));

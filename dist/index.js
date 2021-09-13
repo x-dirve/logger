@@ -192,6 +192,13 @@ Logger.prototype.info = function info () {
         console.log.apply(console, this.build(val));
     }
 };
+/**info 的别名 */
+Logger.prototype.log = function log () {
+        var val = [], len = arguments.length;
+        while ( len-- ) val[ len ] = arguments[ len ];
+
+    this.info.apply(this, val);
+};
 /**警告日志 */
 Logger.prototype.warn = function warn () {
         var val = [], len = arguments.length;
