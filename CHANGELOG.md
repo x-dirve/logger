@@ -1,3 +1,8 @@
+## v1.2.2
+
+### Fix
+- fix: 修复不带样式的时候占位符没去掉的问题 [419f97c](https://github.com/x-dirve/logger/commit/419f97c47781e923626051ba8293a76f30edf534)
+
 ## v1.2.1
 
 ### Feat
