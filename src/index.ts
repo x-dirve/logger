@@ -236,6 +236,11 @@ class Logger {
             this.action = [];
             tpl = `${tpl} ${this.headTypeTpls.action}`;
             headStyle.push("action");
+
+            if (!withStyle) {
+                // 不带样式的要把标识去掉
+                tpl = tpl.replace(/(%c)/g, "");
+            }
         }
 
         var result = [
