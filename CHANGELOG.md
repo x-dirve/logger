@@ -1,3 +1,8 @@
+## v1.2.3
+
+### Fix
+- fix: 修复 error 与 warn 信息中的占位符没有被去掉的问题 [c7b4848](https://github.com/x-dirve/logger/commit/c7b48485641f638db6752601c4b770d5cfb1f9d6)
+
 ## v1.2.2
 
 ### Fix
