@@ -1,3 +1,8 @@
+## v1.2.4
+
+### Feat
+- feat: 新增 debug 支持 [23fbe87](https://github.com/x-dirve/logger/commit/23fbe87b69d2aa1539358b6b647bb7f736fbc2ff)
+
 ## v1.2.3
 
 ### Fix
