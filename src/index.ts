@@ -1,4 +1,4 @@
-import { copy, extend, isString, date, isArray, labelReplace, isUndefined, isObject } from "@x-drive/utils";
+import { copy, extend, isString, date, isArray, labelReplace, isUndefined, isObject, isBoolean } from "@x-drive/utils";
 
 /**已存在的全局 Logger 实例 */
 const LoggerSubjects = new Map<string, Logger>();
@@ -31,6 +31,8 @@ interface ILoggerConfig {
 
     /**时间显示格式 */
     dateFormat: string;
+
+    debug?:boolean;
 }
 
 /**Group 标题设置 */
@@ -133,6 +135,8 @@ class Logger {
     /**时间显示格式 */
     private dateFormat: string = "i:s.M";
 
+    private enableDebug:boolean;
+
     /**
      * 日志
      * @param type   日志归属模块
@@ -149,10 +153,19 @@ class Logger {
         const {
             style
             , app
+            , debug
             , headSequence = copy(DEF_HEAD_SEQUENCE)
             , showDate = true
             , dateFormat
         } = config;
+
+        if (isBoolean(debug)) {
+            this.enableDebug = debug;
+        } else if (globalThis?.process?.env?.NODE_ENV) {
+            this.enableDebug = process.env.NODE_ENV === "development";
+        } else {
+            this.enableDebug = false;
+        }
 
         if (style) {
             this.style = extend(this.style, style);
@@ -293,7 +306,7 @@ class Logger {
         Logger.info("Hello", { "a": 1});
         ```
      */
-    info(...val: any[]) {
+    info(...val: unknown[]) {
         if (isArray(val) && val.length) {
             console.log.apply(
                 console
@@ -303,12 +316,12 @@ class Logger {
     }
 
     /**info 的别名 */
-    log(...val: any[]) {
+    log(...val: unknown[]) {
         this.info.apply(this, val);
     }
 
     /**警告日志 */
-    warn(...val: any[]) {
+    warn(...val: unknown[]) {
         console.warn.apply(
             console
             , this.build(val, false)
@@ -316,7 +329,7 @@ class Logger {
     }
 
     /**错误日志 */
-    error(...val: any[]) {
+    error(...val: unknown[]) {
         console.error.apply(
             console
             , this.build(val, false)
@@ -324,7 +337,7 @@ class Logger {
     }
 
     /**显示当前执行的代码在堆栈中的调用路径 */
-    trace(...val: any[]) {
+    trace(...val: unknown[]) {
         console.trace.apply(
             console
             , this.build(val)
@@ -350,8 +363,8 @@ class Logger {
     );
     ```
      */
-    group(title: IGroupTitleConfig, ...args: any[]):void
-    group(title: string, ...args: any[]):void
+    group(title: IGroupTitleConfig, ...args: unknown[]):void
+    group(title: string, ...args: unknown[]):void
     group(title, ...args) {
         if (isString(title)) {
             (title as IGroupTitleConfig) = {
@@ -381,7 +394,7 @@ class Logger {
     }
 
     /**输出一个表格 */
-    table(...args: any[]) {
+    table(...args: unknown[]) {
         if (!isArray(args) || !args.length) {
             return;
         }
@@ -392,6 +405,20 @@ class Logger {
         );
         console.table.apply(console, title ? args.slice(1) : args);
         console.groupEnd();
+    }
+
+    /**
+     * 调试日志，只有当调试模式打开的时候才会输出
+     * @param val 要打印的信息
+     * @example
+        ```ts
+        Logger.debug("Hello", { "a": 1});
+        ```
+     */
+    debug(...val: unknown[]) {
+        if (this.enableDebug) {
+            this.info.apply(this, val);
+        }
     }
 }
 

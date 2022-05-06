@@ -20,6 +20,7 @@ interface ILoggerConfig {
     tpls: Partial<ILoggerHeadInfoTpls>;
     /**时间显示格式 */
     dateFormat: string;
+    debug?: boolean;
 }
 /**Group 标题设置 */
 interface IGroupTitleConfig {
@@ -71,6 +72,7 @@ declare class Logger {
     private subLogger;
     /**时间显示格式 */
     private dateFormat;
+    private enableDebug;
     /**
      * 日志
      * @param type   日志归属模块
@@ -107,15 +109,15 @@ declare class Logger {
         Logger.info("Hello", { "a": 1});
         ```
      */
-    info(...val: any[]): void;
+    info(...val: unknown[]): void;
     /**info 的别名 */
-    log(...val: any[]): void;
+    log(...val: unknown[]): void;
     /**警告日志 */
-    warn(...val: any[]): void;
+    warn(...val: unknown[]): void;
     /**错误日志 */
-    error(...val: any[]): void;
+    error(...val: unknown[]): void;
     /**显示当前执行的代码在堆栈中的调用路径 */
-    trace(...val: any[]): void;
+    trace(...val: unknown[]): void;
     /**
      * 信息分组日志
      * @param title 群组标题
@@ -135,10 +137,19 @@ declare class Logger {
     );
     ```
      */
-    group(title: IGroupTitleConfig, ...args: any[]): void;
-    group(title: string, ...args: any[]): void;
+    group(title: IGroupTitleConfig, ...args: unknown[]): void;
+    group(title: string, ...args: unknown[]): void;
     /**输出一个表格 */
-    table(...args: any[]): void;
+    table(...args: unknown[]): void;
+    /**
+     * 调试日志，只有当调试模式打开的时候才会输出
+     * @param val 要打印的信息
+     * @example
+        ```ts
+        Logger.debug("Hello", { "a": 1});
+        ```
+     */
+    debug(...val: unknown[]): void;
 }
 export { Logger };
 /**

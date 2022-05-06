@@ -57,12 +57,23 @@ var Logger = function Logger(type, config) {
 Logger.prototype.processConfig = function processConfig (type, config) {
         var this$1 = this;
 
+    var _a, _b;
     this.module = type;
     var style = config.style;
         var app = config.app;
+        var debug = config.debug;
         var headSequence = config.headSequence; if ( headSequence === void 0 ) headSequence = utils.copy(DEF_HEAD_SEQUENCE);
         var showDate = config.showDate; if ( showDate === void 0 ) showDate = true;
         var dateFormat = config.dateFormat;
+    if (utils.isBoolean(debug)) {
+        this.enableDebug = debug;
+    }
+    else if ((_b = (_a = globalThis === null || globalThis === void 0 ? void 0 : globalThis.process) === null || _a === void 0 ? void 0 : _a.env) === null || _b === void 0 ? void 0 : _b.NODE_ENV) {
+        this.enableDebug = process.env.NODE_ENV === "development";
+    }
+    else {
+        this.enableDebug = false;
+    }
     if (style) {
         this.style = utils.extend(this.style, style);
     }
@@ -259,6 +270,22 @@ Logger.prototype.table = function table () {
     console.group.apply(console, this.build([title]));
     console.table.apply(console, title ? args.slice(1) : args);
     console.groupEnd();
+};
+/**
+ * 调试日志，只有当调试模式打开的时候才会输出
+ * @param val 要打印的信息
+ * @example
+    ```ts
+    Logger.debug("Hello", { "a": 1});
+    ```
+ */
+Logger.prototype.debug = function debug () {
+        var val = [], len = arguments.length;
+        while ( len-- ) val[ len ] = arguments[ len ];
+
+    if (this.enableDebug) {
+        this.info.apply(this, val);
+    }
 };
 /**
  * 获取一个全局性质的 Logger

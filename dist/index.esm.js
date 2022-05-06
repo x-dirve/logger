@@ -1,4 +1,4 @@
-import { copy, isString, extend, isUndefined, isObject, date, isArray, labelReplace } from '@x-drive/utils';
+import { copy, isString, isBoolean, extend, isUndefined, isObject, date, isArray, labelReplace } from '@x-drive/utils';
 
 /**已存在的全局 Logger 实例 */
 const LoggerSubjects = new Map();
@@ -55,8 +55,18 @@ class Logger {
         this.processConfig(type, config);
     }
     processConfig(type, config) {
+        var _a, _b;
         this.module = type;
-        const { style, app, headSequence = copy(DEF_HEAD_SEQUENCE), showDate = true, dateFormat } = config;
+        const { style, app, debug, headSequence = copy(DEF_HEAD_SEQUENCE), showDate = true, dateFormat } = config;
+        if (isBoolean(debug)) {
+            this.enableDebug = debug;
+        }
+        else if ((_b = (_a = globalThis === null || globalThis === void 0 ? void 0 : globalThis.process) === null || _a === void 0 ? void 0 : _a.env) === null || _b === void 0 ? void 0 : _b.NODE_ENV) {
+            this.enableDebug = process.env.NODE_ENV === "development";
+        }
+        else {
+            this.enableDebug = false;
+        }
         if (style) {
             this.style = extend(this.style, style);
         }
@@ -225,6 +235,19 @@ class Logger {
         console.group.apply(console, this.build([title]));
         console.table.apply(console, title ? args.slice(1) : args);
         console.groupEnd();
+    }
+    /**
+     * 调试日志，只有当调试模式打开的时候才会输出
+     * @param val 要打印的信息
+     * @example
+        ```ts
+        Logger.debug("Hello", { "a": 1});
+        ```
+     */
+    debug(...val) {
+        if (this.enableDebug) {
+            this.info.apply(this, val);
+        }
     }
 }
 /**

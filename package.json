@@ -1,6 +1,6 @@
 {
     "name": "@x-drive/logger",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "日志信息模块，用于替代 console",
     "author": "digiaries <digiaries@hotmail.com>",
     "license": "MIT",
@@ -28,10 +28,9 @@
     "publishConfig": {
         "access": "public"
     },
-    "dependencies": {
-    },
+    "dependencies": {},
     "devDependencies": {
-        "@x-drive/utils": "1.1.12",
+        "@x-drive/utils": "1.1.19",
         "@x-drive/changelog": "1.1.5",
         "@babel/cli": "7.10.5",
         "@babel/core": "7.11.1",
@@ -64,6 +63,6 @@
         "cross-env": "6.0.3"
     },
     "peerDependencies": {
-        "@x-drive/utils": "1.1.12"
+        "@x-drive/utils": "^1.1.19"
     }
 }
